@@ -91,7 +91,8 @@ contactRouter.post('/addmessage', validateContactMessage, async (req, res) => {
         res.status(201).json(newContact);
     }
     catch (err) {
-        handleRouteError(err, res);
+        console.error('Error creating contact message:', err);
+        res.status(500).json({ error: 'An error occurred while creating contact message' });
     }
 });
 /**
@@ -119,13 +120,14 @@ contactRouter.post('/addmessage', validateContactMessage, async (req, res) => {
  *         description: Internal server error
  */
 // Get all contact messages
-contactRouter.get('/messages', async (req, res) => {
+contactRouter.get('/messages', async (_req, res) => {
     try {
         const contactMessages = await contactService.getAllContactMessages();
         res.status(200).json(contactMessages);
     }
     catch (err) {
-        handleRouteError(err, res);
+        console.error('Error retrieving contact messages:', err);
+        res.status(500).json({ error: 'An error occurred while retrieving contact messages' });
     }
 });
 /**

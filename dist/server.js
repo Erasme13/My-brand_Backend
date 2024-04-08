@@ -19,6 +19,7 @@ const errorHandler_1 = __importDefault(require("./middleware/errorHandler"));
 const usersRoutes_js_1 = require("./routes/usersRoutes.js");
 const contactRoutes_js_1 = __importDefault(require("./routes/contactRoutes.js"));
 const commentRoutes_js_1 = __importDefault(require("./routes/commentRoutes.js"));
+const adminMiddleware_js_1 = require("./middleware/adminMiddleware.js");
 dotenv_1.default.config();
 exports.app = (0, express_1.default)();
 const port = process.env.PORT || 4000;
@@ -32,6 +33,7 @@ const swaggerSpec = (0, swagger_jsdoc_1.default)(swaggerOptions_1.default);
 exports.app.use('/api-docs', swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swaggerSpec));
 exports.app.use(express_1.default.json());
 exports.app.use(express_1.default.urlencoded({ extended: true }));
+exports.app.use('/api/addblog', adminMiddleware_js_1.isAdmin);
 //routes
 exports.app.use("/api", usersRoutes_js_1.usersRouter, blogRoutes_js_1.default, contactRoutes_js_1.default, commentRoutes_js_1.default);
 db_config_js_1.db.then(() => {

@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 import * as blogService from '../services/blogService';
 import mongoose from 'mongoose';
 import { validateBlog } from './blogValidation';
+import { isAdmin } from '../middleware/adminMiddleware'
 
 const blogRouter = express.Router();
 
@@ -28,7 +29,7 @@ const blogRouter = express.Router();
  */
 
 // Create a new blog
-blogRouter.post('/addblog', validateBlog, async (req: Request, res: Response) => {
+blogRouter.post('/addblog',isAdmin, validateBlog, async (req: Request, res: Response) => {
     const { title, content, author } = req.body;
     try {
         const newBlog = await blogService.createBlog(title, content, author);

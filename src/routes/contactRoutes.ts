@@ -68,7 +68,8 @@ contactRouter.post('/addmessage', validateContactMessage, async (req: Request, r
         const newContact = await contactService.createContactMessage( firstname, lastname, email, phone, message );
         res.status(201).json(newContact);
     } catch (err) {
-        handleRouteError(err, res);
+        console.error('Error creating contact message:', err);
+        res.status(500).json({ error: 'An error occurred while creating contact message' });
     }
 });
 
@@ -99,13 +100,15 @@ contactRouter.post('/addmessage', validateContactMessage, async (req: Request, r
 
 
 // Get all contact messages
-contactRouter.get('/messages', async (req: Request, res: Response) => {
+contactRouter.get('/messages', async (_req: Request, res: Response) => {
     try {
         const contactMessages = await contactService.getAllContactMessages();
         res.status(200).json(contactMessages);
     } catch (err) {
-        handleRouteError(err, res);
+        console.error('Error retrieving contact messages:', err);
+        res.status(500).json({ error: 'An error occurred while retrieving contact messages' });
     }
+    
 });
 
 /**

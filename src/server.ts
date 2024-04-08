@@ -13,6 +13,8 @@ import errorHandler from './middleware/errorHandler';
 import { usersRouter } from './routes/usersRoutes.js';
 import contactRouter from './routes/contactRoutes.js';
 import commentRouter from './routes/commentRoutes.js';
+import { isAdmin } from './middleware/adminMiddleware.js';
+
 
 
 
@@ -33,6 +35,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
+app.use('/api/addblog', isAdmin);
 
 
 

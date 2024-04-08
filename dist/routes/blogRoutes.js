@@ -30,6 +30,7 @@ const express_1 = __importDefault(require("express"));
 const blogService = __importStar(require("../services/blogService"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const blogValidation_1 = require("./blogValidation");
+const adminMiddleware_1 = require("../middleware/adminMiddleware");
 const blogRouter = express_1.default.Router();
 /**
  * @swagger
@@ -52,7 +53,7 @@ const blogRouter = express_1.default.Router();
  *           description: Content of the blog
  */
 // Create a new blog
-blogRouter.post('/addblog', blogValidation_1.validateBlog, async (req, res) => {
+blogRouter.post('/addblog', adminMiddleware_1.isAdmin, blogValidation_1.validateBlog, async (req, res) => {
     const { title, content, author } = req.body;
     try {
         const newBlog = await blogService.createBlog(title, content, author);

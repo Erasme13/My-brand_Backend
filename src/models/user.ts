@@ -4,6 +4,8 @@ export interface UserDocument extends Document {
     username: string;
     email: string;
     password: string;
+    role: 'user' | 'admin';
+    rememberMe?: boolean;
 }
 
 const userSchema: Schema<UserDocument> = new Schema({
@@ -28,6 +30,15 @@ const userSchema: Schema<UserDocument> = new Schema({
         required: true,
         minlength: 6,
         match: /^(?=.*\d)(?=.*[a-zA-Z])(?=.*[\W_]).{6,}$/
+    },
+    role: {
+        type: String,
+        required: true,
+        enum: ['user', 'admin'],
+        default: 'user'
+    },
+    rememberMe: {
+        type: Boolean
     }
 });
 

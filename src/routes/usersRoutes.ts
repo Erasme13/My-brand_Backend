@@ -42,7 +42,7 @@ usersRouter.post('/users/signup', async (req: Request, res: Response) => {
         const { error } = userSignupSchema.validate(req.body);
         if (error) {
             return res.status(400).json({ message: error.details[0].message });
-        }
+        }  
 
         // Extract user credentials from request body
         const { username, email, password } = req.body;

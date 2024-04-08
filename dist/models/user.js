@@ -46,6 +46,15 @@ const userSchema = new mongoose_1.Schema({
         required: true,
         minlength: 6,
         match: /^(?=.*\d)(?=.*[a-zA-Z])(?=.*[\W_]).{6,}$/
+    },
+    role: {
+        type: String,
+        required: true,
+        enum: ['user', 'admin'],
+        default: 'user'
+    },
+    rememberMe: {
+        type: Boolean
     }
 });
 const User = mongoose_1.default.model('User', userSchema);

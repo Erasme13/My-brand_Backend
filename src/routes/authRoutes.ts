@@ -1,7 +1,7 @@
 import express from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import User from '../models/user'
+import User from '../models/user';
 
 const authRouter = express.Router();
 
@@ -13,6 +13,10 @@ authRouter.post('/signup', async (req, res) => {
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: 'User already exists' });
+    }
+    const existingUsername = await User.findOne({ username });
+    if (existingUsername) {
+      return res.status(400).json({ message: 'Username is already taken' });
     }
 
     // Hash the password
@@ -37,7 +41,7 @@ authRouter.post('/signup', async (req, res) => {
 
 authRouter.post('/users/login', async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, rememberMe } = req.body;
 
     // Check if user exists
     const user = await User.findOne({ email });
@@ -53,6 +57,12 @@ authRouter.post('/users/login', async (req, res) => {
 
     // Generate JWT token
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET || '');
+
+    // Save rememberMe preference to the database if checked
+    if (rememberMe) {
+      user.rememberMe = true;
+      await user.save();
+    }
 
     res.status(200).json({ message: 'Login successful', token });
   } catch (error) {
