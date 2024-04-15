@@ -26,16 +26,22 @@ const port = process.env.PORT || 4000;
 exports.app.use((0, cors_1.default)());
 exports.app.use((0, helmet_1.default)());
 exports.app.use(body_parser_1.default.json());
+exports.app.use(body_parser_1.default.urlencoded({ extended: true }));
 exports.app.use((0, morgan_1.default)('dev'));
 exports.app.use(errorHandler_1.default);
-// my routes
+// Define Swagger documentation route
 const swaggerSpec = (0, swagger_jsdoc_1.default)(swaggerOptions_1.default);
 exports.app.use('/api-docs', swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swaggerSpec));
-exports.app.use(express_1.default.json());
-exports.app.use(express_1.default.urlencoded({ extended: true }));
+// Middleware to ensure isAdmin is applied only to /api/addblog route
 exports.app.use('/api/addblog', adminMiddleware_js_1.isAdmin);
-//routes
-exports.app.use("/api", usersRoutes_js_1.usersRouter, blogRoutes_js_1.default, contactRoutes_js_1.default, commentRoutes_js_1.default);
+// Define routes
+exports.app.use('/api', usersRoutes_js_1.usersRouter);
+exports.app.use('/api', blogRoutes_js_1.default);
+exports.app.use('/api', contactRoutes_js_1.default);
+exports.app.use('/api', commentRoutes_js_1.default);
+// Establish database connection and start server
 db_config_js_1.db.then(() => {
     exports.app.listen(port, () => console.log(`Server started at http://localhost:${port}`));
+}).catch(err => {
+    console.error('Error connecting to database:', err);
 });

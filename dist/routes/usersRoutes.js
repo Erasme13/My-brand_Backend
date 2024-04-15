@@ -1,4 +1,27 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -8,6 +31,7 @@ const express_1 = __importDefault(require("express"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const user_1 = __importDefault(require("../models/user"));
+const userService = __importStar(require("../services/userService"));
 const userValidation_1 = require("./userValidation");
 exports.usersRouter = express_1.default.Router();
 /**
@@ -44,14 +68,13 @@ exports.usersRouter.post('/users/signup', async (req, res) => {
         // Extract user credentials from request body
         const { username, email, password } = req.body;
         // Check if email already exists
-        const existingUser = await user_1.default.findOne({ email });
+        const existingUser = await userService.getUserByEmail(email);
         if (existingUser) {
             return res.status(400).json({ message: 'Email already exists' });
         }
         // Hash password using bcrypt
         const hashedPassword = await bcrypt_1.default.hash(password, 10);
-        const newUser = new user_1.default({ username, email, password: hashedPassword });
-        await newUser.save();
+        await userService.createUser(username, email, hashedPassword);
         res.status(201).json({ message: 'Successfully registered' });
     }
     catch (error) {

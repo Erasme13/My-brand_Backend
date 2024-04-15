@@ -6,7 +6,7 @@ interface ContactDocument extends Document {
     firstname: string;
     lastname: string;
     email: string;
-    hone: string;
+    phone: string;
     message: string;
     createdAt: Date;
 }

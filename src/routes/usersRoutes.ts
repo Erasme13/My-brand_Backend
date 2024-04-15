@@ -2,7 +2,7 @@ import express, { Request, Response } from 'express';
 import bcrypt from 'bcrypt'; 
 import jwt from 'jsonwebtoken';
 import User from '../models/user';
-import Joi from 'joi';
+import * as userService from '../services/userService';
 import { userSignupSchema, userLoginSchema } from './userValidation';
 
 export const usersRouter = express.Router();
@@ -48,15 +48,14 @@ usersRouter.post('/users/signup', async (req: Request, res: Response) => {
         const { username, email, password } = req.body;
 
         // Check if email already exists
-        const existingUser = await User.findOne({ email });
+        const existingUser = await userService.getUserByEmail(email);
         if (existingUser) {
             return res.status(400).json({ message: 'Email already exists' });
         }
 
         // Hash password using bcrypt
         const hashedPassword = await bcrypt.hash(password, 10);
-        const newUser = new User({ username, email, password: hashedPassword });
-        await newUser.save();
+        await userService.createUser( username, email, hashedPassword );
 
         res.status(201).json({ message: 'Successfully registered' });
     } catch (error) {

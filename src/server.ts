@@ -1,5 +1,5 @@
 import express, { Express } from 'express';
-import dotenv from "dotenv";
+import dotenv from 'dotenv';
 import { db } from './config/db.config.js';
 import blogRouter from './routes/blogRoutes.js';
 import swaggerUi from 'swagger-ui-express';
@@ -15,9 +15,6 @@ import contactRouter from './routes/contactRoutes.js';
 import commentRouter from './routes/commentRoutes.js';
 import { isAdmin } from './middleware/adminMiddleware.js';
 
-
-
-
 dotenv.config();
 
 export const app = express();
@@ -26,28 +23,26 @@ const port = process.env.PORT || 4000;
 app.use(cors());
 app.use(helmet());
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 app.use(errorHandler);
 
-// my routes
+// Define Swagger documentation route
 const swaggerSpec = swaggerJSDoc(swaggerOptions);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-app.use(express.json())
-app.use(express.urlencoded({extended: true}))
+// Middleware to ensure isAdmin is applied only to /api/addblog route
 app.use('/api/addblog', isAdmin);
 
+// Define routes
+app.use('/api', usersRouter);
+app.use('/api', blogRouter);
+app.use('/api', contactRouter);
+app.use('/api', commentRouter);
 
-
-//routes
-app.use("/api", usersRouter, blogRouter, contactRouter, commentRouter)
+// Establish database connection and start server
 db.then(() => {
-    app.listen(port, () => console.log(`Server started at http://localhost:${port}`))
-    
+    app.listen(port, () => console.log(`Server started at http://localhost:${port}`));
+}).catch(err => {
+    console.error('Error connecting to database:', err);
 });
-
-   
-   
-   
-
-   
