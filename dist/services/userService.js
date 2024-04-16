@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getUserByEmail = exports.createUser = void 0;
 const user_1 = __importDefault(require("../models/user"));
 // Function to create a new user
-async function createUser(username, email, password, rememberMe = false) {
+async function createUser(username, email, password) {
     const newUser = new user_1.default({ username, email, password });
     return await newUser.save();
 }

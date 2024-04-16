@@ -30,7 +30,7 @@ describe('Users API', () => {
   });
 
   // Test user registration endpoint
-  describe('POST /api/users/signup', () => {
+  describe('POST/api/users/signup', () => {
     it('should register a new user', (done) => {
       request(app)
         .post('/api/users/signup')

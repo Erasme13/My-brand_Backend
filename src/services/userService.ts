@@ -1,7 +1,7 @@
 import User, { UserDocument } from '../models/user';
 
 // Function to create a new user
-export async function createUser(username: string, email: string, password: string, rememberMe: boolean = false): Promise<UserDocument>{
+export async function createUser(username: string, email: string, password: string): Promise<UserDocument>{
     const newUser = new User({ username, email, password });
     return await newUser.save();
 }
