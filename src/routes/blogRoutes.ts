@@ -70,7 +70,7 @@ blogRouter.post('/addblog', isAdmin, validateBlog, async (req: Request, res: Res
 
 
 // Get all blogs
-blogRouter.get('/blog', async (req: Request, res: Response) => {
+blogRouter.get('/blogs', async (req: Request, res: Response) => {
     try {
         const blogs = await blogService.getAllBlogs();
         res.status(200).json(blogs);
@@ -82,7 +82,7 @@ blogRouter.get('/blog', async (req: Request, res: Response) => {
 
 /**
  * @swagger
- * /api/blog:
+ * /api/blogs:
  *   get:
  *     summary: Get all blogs
  *     description: Retrieve a list of all blogs.

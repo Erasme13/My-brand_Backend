@@ -123,6 +123,7 @@ usersRouter.post('/users/login', async (req: Request, res: Response) => {
         }
 
         // Generate JWT token  
+        const jwt = require('jsonwebtoken');
 
         const token = jwt.sign({ userID: user._id }, process.env.JWT_SECRET || '', { expiresIn: '1h' });
         

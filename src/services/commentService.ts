@@ -67,3 +67,7 @@ export async function deleteComment(commentId: string): Promise<CommentDocument 
         throw error;
     }
 }
+
+export function getCommentsForBlog(blogId: string) {
+    throw new Error('Function not implemented.');
+}

@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteComment = exports.updateComment = exports.getCommentById = exports.getAllComments = exports.createComment = void 0;
+exports.getCommentsForBlog = exports.deleteComment = exports.updateComment = exports.getCommentById = exports.getAllComments = exports.createComment = void 0;
 const joi_1 = __importDefault(require("joi"));
 const comment_1 = __importDefault(require("../models/comment"));
 // Joi schema for validating comment data
@@ -75,3 +75,7 @@ async function deleteComment(commentId) {
     }
 }
 exports.deleteComment = deleteComment;
+function getCommentsForBlog(blogId) {
+    throw new Error('Function not implemented.');
+}
+exports.getCommentsForBlog = getCommentsForBlog;

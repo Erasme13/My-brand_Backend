@@ -92,7 +92,7 @@ blogRouter.post('/addblog', adminMiddleware_1.isAdmin, blogValidation_1.validate
  *         description: Bad request. Invalid blog data provided.
  */
 // Get all blogs
-blogRouter.get('/blog', async (req, res) => {
+blogRouter.get('/blogs', async (req, res) => {
     try {
         const blogs = await blogService.getAllBlogs();
         res.status(200).json(blogs);
@@ -103,7 +103,7 @@ blogRouter.get('/blog', async (req, res) => {
 });
 /**
  * @swagger
- * /api/blog:
+ * /api/blogs:
  *   get:
  *     summary: Get all blogs
  *     description: Retrieve a list of all blogs.

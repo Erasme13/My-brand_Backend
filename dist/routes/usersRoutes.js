@@ -29,7 +29,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.usersRouter = void 0;
 const express_1 = __importDefault(require("express"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
-const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const user_1 = __importDefault(require("../models/user"));
 const userService = __importStar(require("../services/userService"));
 const userValidation_1 = require("./userValidation");
@@ -134,7 +133,8 @@ exports.usersRouter.post('/users/login', async (req, res) => {
             return res.status(401).json({ message: 'Invalid email or password' });
         }
         // Generate JWT token  
-        const token = jsonwebtoken_1.default.sign({ userID: user._id }, process.env.JWT_SECRET || '', { expiresIn: '1h' });
+        const jwt = require('jsonwebtoken');
+        const token = jwt.sign({ userID: user._id }, process.env.JWT_SECRET || '', { expiresIn: '1h' });
         // Respond with the token 
         res.status(200).json({ token, message: 'Successfully logged in' });
     }
