@@ -8,8 +8,9 @@ const joi_1 = __importDefault(require("joi"));
 // Define Joi schema for validating blog data
 const blogSchema = joi_1.default.object({
     title: joi_1.default.string().min(3).max(100).required(),
+    photo: joi_1.default.string().uri().allow(null).optional(),
     content: joi_1.default.string().required(),
-    author: joi_1.default.string()
+    author: joi_1.default.string(),
 });
 // Validation middleware function to validate incoming blog data
 const validateBlog = (req, res, next) => {

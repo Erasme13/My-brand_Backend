@@ -1,6 +1,6 @@
-import express, { Express } from 'express';
+import express from 'express';
 import dotenv from 'dotenv';
-import { db } from './config/db.config.js';
+import connectDB from './config/db.config.js';
 import blogRouter from './routes/blogRoutes.js';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJSDoc from 'swagger-jsdoc';
@@ -14,6 +14,7 @@ import { usersRouter } from './routes/usersRoutes.js';
 import contactRouter from './routes/contactRoutes.js';
 import commentRouter from './routes/commentRoutes.js';
 import { isAdmin } from './middleware/adminMiddleware.js';
+import adminRouter from './routes/adminRoutes.js';
 
 dotenv.config();
 
@@ -39,9 +40,10 @@ app.use('/api', usersRouter);
 app.use('/api', blogRouter);
 app.use('/api', contactRouter);
 app.use('/api', commentRouter);
+app.use('/api', adminRouter)
 
 // Establish database connection and start server
-db.then(() => {
+connectDB().then(() => {
     app.listen(port, () => console.log(`Server started at http://localhost:${port}`));
 }).catch(err => {
     console.error('Error connecting to database:', err);

@@ -51,12 +51,15 @@ const blogRouter = express_1.default.Router();
  *         content:
  *           type: string
  *           description: Content of the blog
+ *         photo:
+ *           type: string
+ *           description: Link to the photo associated with the blog
  */
 // Create a new blog
 blogRouter.post('/addblog', adminMiddleware_1.isAdmin, blogValidation_1.validateBlog, async (req, res) => {
-    const { title, content, author } = req.body;
+    const { title, content, photo } = req.body;
     try {
-        const newBlog = await blogService.createBlog(title, content, author);
+        const newBlog = await blogService.createBlog(title, content, photo);
         res.status(201).json({ message: 'Blog created successfully', data: newBlog });
     }
     catch (err) {
@@ -68,8 +71,10 @@ blogRouter.post('/addblog', adminMiddleware_1.isAdmin, blogValidation_1.validate
  * /api/addblog:
  *   post:
  *     summary: Create a new blog post
- *     description: Create a new blog post with the provided title and content.
+ *     description: Create a new blog post with the provided title, content, and photo.
  *     tags: [Blog]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -152,7 +157,7 @@ blogRouter.get('/blog/:id', async (req, res) => {
  *         description: Blog not found.
  */
 // Update a blog
-blogRouter.put('/blog/update/:id', blogValidation_1.validateBlog, async (req, res) => {
+blogRouter.put('/blog/update/:id', adminMiddleware_1.isAdmin, blogValidation_1.validateBlog, async (req, res) => {
     const blogId = req.params.id;
     const update = req.body;
     try {
@@ -199,7 +204,7 @@ blogRouter.put('/blog/update/:id', blogValidation_1.validateBlog, async (req, re
  *         description: Blog not found.
  */
 // Delete a blog
-blogRouter.delete('/blog/delete/:id', async (req, res) => {
+blogRouter.delete('/blog/delete/:id', adminMiddleware_1.isAdmin, async (req, res) => {
     const blogId = req.params.id;
     try {
         const deletedBlog = await blogService.deleteBlog(mongoose_1.default.Types.ObjectId.createFromHexString(blogId));

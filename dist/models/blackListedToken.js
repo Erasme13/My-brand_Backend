@@ -24,36 +24,17 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
-const blogSchema = new mongoose_1.Schema({
-    title: {
+const blacklistedTokenSchema = new mongoose_1.Schema({
+    token: {
         type: String,
         required: true,
-        trim: true,
-        minlength: 3,
-        maxlength: 100
+        unique: true,
     },
-    photo: {
-        type: String,
-        required: true
+    createdAt: {
+        type: Date,
+        default: Date.now,
+        expires: '1d',
     },
-    content: {
-        type: String,
-        required: true
-    },
-    author: {
-        type: String,
-        default: "HOZIYANA Erasme"
-    },
-    likes: {
-        type: Number,
-        default: 0
-    },
-    comments: [
-        {
-            type: mongoose_1.Schema.Types.ObjectId,
-            ref: 'Comment'
-        }
-    ]
 });
-const Blog = mongoose_1.default.model('Blog', blogSchema);
-exports.default = Blog;
+const BlacklistedToken = mongoose_1.default.model('BlacklistedToken', blacklistedTokenSchema);
+exports.default = BlacklistedToken;

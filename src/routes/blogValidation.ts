@@ -4,8 +4,9 @@ import Joi from 'joi';
 // Define Joi schema for validating blog data
 const blogSchema = Joi.object({
     title: Joi.string().min(3).max(100).required(),
+    photo: Joi.string().uri().allow(null).optional(),
     content: Joi.string().required(),
-    author: Joi.string()
+    author: Joi.string(),
 });
 
 // Validation middleware function to validate incoming blog data

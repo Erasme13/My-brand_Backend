@@ -2,7 +2,7 @@ import express, { Request, Response } from 'express';
 import * as blogService from '../services/blogService';
 import mongoose from 'mongoose';
 import { validateBlog } from './blogValidation';
-import { isAdmin } from '../middleware/adminMiddleware'
+import { isAdmin } from '../middleware/adminMiddleware';
 
 const blogRouter = express.Router();
 
@@ -26,13 +26,16 @@ const blogRouter = express.Router();
  *         content: 
  *           type: string
  *           description: Content of the blog
+ *         photo:
+ *           type: string
+ *           description: Link to the photo associated with the blog
  */
 
 // Create a new blog
-blogRouter.post('/addblog',isAdmin, validateBlog, async (req: Request, res: Response) => {
-    const { title, content, author } = req.body;
+blogRouter.post('/addblog', isAdmin, validateBlog, async (req: Request, res: Response) => {
+    const { title, content, photo } = req.body;
     try {
-        const newBlog = await blogService.createBlog(title, content, author);
+        const newBlog = await blogService.createBlog(title, content, photo);
         res.status(201).json({ message: 'Blog created successfully', data: newBlog });
     } catch (err) {
         handleRouteError(err, res);
@@ -44,8 +47,10 @@ blogRouter.post('/addblog',isAdmin, validateBlog, async (req: Request, res: Resp
  * /api/addblog:
  *   post:
  *     summary: Create a new blog post
- *     description: Create a new blog post with the provided title and content.
+ *     description: Create a new blog post with the provided title, content, and photo.
  *     tags: [Blog]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -134,7 +139,7 @@ blogRouter.get('/blog/:id', async (req: Request, res: Response) => {
 
 
 // Update a blog
-blogRouter.put('/blog/update/:id', validateBlog, async (req: Request, res: Response) => {
+blogRouter.put('/blog/update/:id', isAdmin, validateBlog, async (req: Request, res: Response) => {
     const blogId = req.params.id;
     const update = req.body;
     try {
@@ -183,7 +188,7 @@ blogRouter.put('/blog/update/:id', validateBlog, async (req: Request, res: Respo
 
 
 // Delete a blog
-blogRouter.delete('/blog/delete/:id', async (req: Request, res: Response) => {
+blogRouter.delete('/blog/delete/:id', isAdmin, async (req: Request, res: Response) => {
     const blogId = req.params.id;
     try {
         const deletedBlog = await blogService.deleteBlog(mongoose.Types.ObjectId.createFromHexString(blogId));

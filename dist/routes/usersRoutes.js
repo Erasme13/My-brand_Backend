@@ -33,12 +33,22 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const user_1 = __importDefault(require("../models/user"));
 const userService = __importStar(require("../services/userService"));
 const userValidation_1 = require("./userValidation");
+const blackListedToken_1 = __importDefault(require("../models/blackListedToken"));
 exports.usersRouter = express_1.default.Router();
 /**
  * @swagger
  * tags:
  *   name: Users
  *   description: User management
+ */
+/**
+ * @swagger
+ * components:
+ *   securitySchemes:
+ *     BearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
  */
 /**
  * @swagger
@@ -126,7 +136,7 @@ exports.usersRouter.post('/users/login', async (req, res) => {
         // Generate JWT token  
         const token = jsonwebtoken_1.default.sign({ userID: user._id }, process.env.JWT_SECRET || '', { expiresIn: '1h' });
         // Respond with the token 
-        res.status(200).json({ token });
+        res.status(200).json({ token, message: 'Successfully logged in' });
     }
     catch (error) {
         console.error('Error logging in a user:', error);
@@ -140,7 +150,8 @@ exports.usersRouter.post('/users/login', async (req, res) => {
  *     summary: User Login
  *     description: Authenticate a user and generate a JWT token for authorization.
  *     tags: [Users]
- *     security: []  # No security requirements for login endpoint
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -155,19 +166,66 @@ exports.usersRouter.post('/users/login', async (req, res) => {
  *     responses:
  *       '200':
  *         description: Login successful. Returns JWT token.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 token:
- *                   type: string
+ *         schema:
+ *           type: object
+ *           properties:
+ *             token:
+ *               type: string
  *       '400':
  *         description: Bad request. Invalid email or password provided.
  *       '401':
  *         description: Unauthorized. Email not found or password mismatch.
  *       '500':
  *         description: Internal server error.
+ */
+// User logout endpoint
+exports.usersRouter.post('/users/logout', async (req, res) => {
+    try {
+        const token = req.headers.authorization?.split(' ')[1];
+        if (!token) {
+            return res.status(400).json({ message: 'Token not provided' });
+        }
+        // Add the token to the blacklist
+        const blacklistedToken = new blackListedToken_1.default({ token });
+        await blacklistedToken.save();
+        res.status(200).json({ message: 'Logout successful' });
+    }
+    catch (error) {
+        console.error('Error logging out a user:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     LogoutResponse:
+ *       type: object
+ *       properties:
+ *         message:
+ *           type: string
+ *           description: Message indicating the logout was successful.
+ */
+/**
+ * @swagger
+ * /api/users/logout:
+ *   post:
+ *     summary: Logout user
+ *     description: Invalidate the user's authentication token.
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       '200':
+ *         description: Logout successful.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/LogoutResponse'
+ *       '500':
+ *         description: Internal server error.
+ *       '401':
+ *         description: Unauthorized. The user is not authenticated.
  */
 // Get all users
 exports.usersRouter.get('/users', async (req, res) => {

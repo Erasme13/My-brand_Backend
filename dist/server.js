@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.app = void 0;
 const express_1 = __importDefault(require("express"));
 const dotenv_1 = __importDefault(require("dotenv"));
-const db_config_js_1 = require("./config/db.config.js");
+const db_config_js_1 = __importDefault(require("./config/db.config.js"));
 const blogRoutes_js_1 = __importDefault(require("./routes/blogRoutes.js"));
 const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
 const swagger_jsdoc_1 = __importDefault(require("swagger-jsdoc"));
@@ -20,6 +20,7 @@ const usersRoutes_js_1 = require("./routes/usersRoutes.js");
 const contactRoutes_js_1 = __importDefault(require("./routes/contactRoutes.js"));
 const commentRoutes_js_1 = __importDefault(require("./routes/commentRoutes.js"));
 const adminMiddleware_js_1 = require("./middleware/adminMiddleware.js");
+const adminRoutes_js_1 = __importDefault(require("./routes/adminRoutes.js"));
 dotenv_1.default.config();
 exports.app = (0, express_1.default)();
 const port = process.env.PORT || 4000;
@@ -39,8 +40,9 @@ exports.app.use('/api', usersRoutes_js_1.usersRouter);
 exports.app.use('/api', blogRoutes_js_1.default);
 exports.app.use('/api', contactRoutes_js_1.default);
 exports.app.use('/api', commentRoutes_js_1.default);
+exports.app.use('/api', adminRoutes_js_1.default);
 // Establish database connection and start server
-db_config_js_1.db.then(() => {
+(0, db_config_js_1.default)().then(() => {
     exports.app.listen(port, () => console.log(`Server started at http://localhost:${port}`));
 }).catch(err => {
     console.error('Error connecting to database:', err);
