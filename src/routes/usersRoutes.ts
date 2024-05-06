@@ -98,7 +98,7 @@ usersRouter.post('/users/signup', async (req: Request, res: Response) => {
  */
 
 
-// User login 
+// User login
 usersRouter.post('/users/login', async (req: Request, res: Response) => {
     try {
         // Validate request body using Joi schema
@@ -111,7 +111,7 @@ usersRouter.post('/users/login', async (req: Request, res: Response) => {
         const { email, password } = req.body;
 
         // Find user by email
-        const user = await User.findOne({ email }); 
+        const user = await User.findOne({ email });
         if (!user) {
             return res.status(401).json({ message: 'Invalid email or password' });
         }
@@ -122,28 +122,39 @@ usersRouter.post('/users/login', async (req: Request, res: Response) => {
             return res.status(401).json({ message: 'Invalid email or password' });
         }
 
-        // Generate JWT token  
-        const jwt = require('jsonwebtoken');
+        // Generate JWT token
+        const token = jwt.sign({ userId: user._id, isAdmin: user.role === 'admin' }, process.env.JWT_SECRET || '', { expiresIn: '1d' });
 
-        const token = jwt.sign({ userID: user._id }, process.env.JWT_SECRET || '', { expiresIn: '1h' });
-        
-        // Respond with the token 
-        res.status(200).json({ token, message: 'Successfully logged in' });
+        // Log the generated token for debugging
+        console.log('Generated token:', token);
+
+        // Respond with the user information and token
+        res.status(200).json({
+            message: 'Successfully logged in',
+            token,
+            user: {
+                _id: user._id,
+                email: user.email,
+                username: user.username,
+                role: user.role
+            }
+        });
     } catch (error) {
         console.error('Error logging in a user:', error);
         res.status(500).json({ message: 'Internal server error' });
     }
 });
 
+
 /**
  * @swagger
  * /api/users/login:
  *   post:
  *     summary: User Login
- *     description: Authenticate a user and generate a JWT token for authorization.
+ *     description: Authenticate a user and generate a JWT token for authorization. The token is set as a cookie in the response.
  *     tags: [Users]
  *     security:
- *       - bearerAuth: []
+ *       - cookieAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -157,19 +168,25 @@ usersRouter.post('/users/login', async (req: Request, res: Response) => {
  *                 type: string
  *     responses:
  *       '200':
- *         description: Login successful. Returns JWT token.
- *         schema:
- *           type: object
- *           properties:
- *             token:
+ *         description: Login successful. JWT token set as a cookie.
+ *         headers:
+ *           Set-Cookie:
+ *             schema:
  *               type: string
+ *               description: JWT token set as a cookie.
  *       '400':
  *         description: Bad request. Invalid email or password provided.
  *       '401':
  *         description: Unauthorized. Email not found or password mismatch.
  *       '500':
  *         description: Internal server error.
+ * securityDefinitions:
+ *   cookieAuth:
+ *     type: apiKey
+ *     in: cookie
+ *     name: token
  */
+
 
 
 // User logout endpoint
@@ -386,5 +403,3 @@ usersRouter.delete('/users/delete/:userId', async (req: Request, res: Response) 
  *       '500':
  *         description: Internal server error.
  */
-
-

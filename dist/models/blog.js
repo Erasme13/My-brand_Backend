@@ -44,16 +44,14 @@ const blogSchema = new mongoose_1.Schema({
         type: String,
         default: "HOZIYANA Erasme"
     },
-    likes: {
-        type: Number,
-        default: 0
-    },
-    comments: [
-        {
+    likes: [{
+            type: mongoose_1.Schema.Types.ObjectId,
+            ref: 'Like'
+        }],
+    comments: [{
             type: mongoose_1.Schema.Types.ObjectId,
             ref: 'Comment'
-        }
-    ]
+        }]
 });
 const Blog = mongoose_1.default.model('Blog', blogSchema);
 exports.default = Blog;

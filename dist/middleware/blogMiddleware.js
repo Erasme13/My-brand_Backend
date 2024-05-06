@@ -22,44 +22,28 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const mongoose_1 = __importStar(require("mongoose"));
-const userSchema = new mongoose_1.Schema({
-    username: {
-        type: String,
-        required: true,
-        unique: true,
-        trim: true,
-        minlength: 3,
-        maxlength: 40
-    },
-    email: {
-        type: String,
-        required: true,
-        unique: true,
-        trim: true,
-        lowercase: true,
-        match: /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    },
-    password: {
-        type: String,
-        required: true,
-        minlength: 6,
-        match: /^(?=.*\d)(?=.*[a-zA-Z])(?=.*[\W_]).{6,}$/
-    },
-    role: {
-        type: String,
-        required: true,
-        enum: ['user', 'admin'],
-        default: 'user'
-    },
-    rememberMe: {
-        type: Boolean
-    },
-    isAdmin: {
-        type: Boolean,
-        default: false
+exports.populateBlogData = void 0;
+const blogService = __importStar(require("../services/blogService"));
+const mongoose_1 = __importDefault(require("mongoose"));
+// Middleware to populate blog data for updating
+const populateBlogData = async (req, res, next) => {
+    const blogId = req.params.id;
+    try {
+        const blog = await blogService.getBlogById(mongoose_1.default.Types.ObjectId.createFromHexString(blogId));
+        if (!blog) {
+            return res.status(404).json({ message: 'Blog not found' });
+        }
+        req.blog = blog;
+        next();
     }
-});
-const User = mongoose_1.default.model('User', userSchema);
-exports.default = User;
+    catch (err) {
+        // Handle errors
+        console.error('Error populating blog data:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+exports.populateBlogData = populateBlogData;

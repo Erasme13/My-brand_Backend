@@ -29,6 +29,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.usersRouter = void 0;
 const express_1 = __importDefault(require("express"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const user_1 = __importDefault(require("../models/user"));
 const userService = __importStar(require("../services/userService"));
 const userValidation_1 = require("./userValidation");
@@ -112,7 +113,7 @@ exports.usersRouter.post('/users/signup', async (req, res) => {
  *       '500':
  *         description: Internal server error.
  */
-// User login 
+// User login
 exports.usersRouter.post('/users/login', async (req, res) => {
     try {
         // Validate request body using Joi schema
@@ -132,11 +133,21 @@ exports.usersRouter.post('/users/login', async (req, res) => {
         if (!passwordMatch) {
             return res.status(401).json({ message: 'Invalid email or password' });
         }
-        // Generate JWT token  
-        const jwt = require('jsonwebtoken');
-        const token = jwt.sign({ userID: user._id }, process.env.JWT_SECRET || '', { expiresIn: '1h' });
-        // Respond with the token 
-        res.status(200).json({ token, message: 'Successfully logged in' });
+        // Generate JWT token
+        const token = jsonwebtoken_1.default.sign({ userId: user._id, isAdmin: user.role === 'admin' }, process.env.JWT_SECRET || '', { expiresIn: '1d' });
+        // Log the generated token for debugging
+        console.log('Generated token:', token);
+        // Respond with the user information and token
+        res.status(200).json({
+            message: 'Successfully logged in',
+            token,
+            user: {
+                _id: user._id,
+                email: user.email,
+                username: user.username,
+                role: user.role
+            }
+        });
     }
     catch (error) {
         console.error('Error logging in a user:', error);
@@ -148,10 +159,10 @@ exports.usersRouter.post('/users/login', async (req, res) => {
  * /api/users/login:
  *   post:
  *     summary: User Login
- *     description: Authenticate a user and generate a JWT token for authorization.
+ *     description: Authenticate a user and generate a JWT token for authorization. The token is set as a cookie in the response.
  *     tags: [Users]
  *     security:
- *       - bearerAuth: []
+ *       - cookieAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -165,18 +176,23 @@ exports.usersRouter.post('/users/login', async (req, res) => {
  *                 type: string
  *     responses:
  *       '200':
- *         description: Login successful. Returns JWT token.
- *         schema:
- *           type: object
- *           properties:
- *             token:
+ *         description: Login successful. JWT token set as a cookie.
+ *         headers:
+ *           Set-Cookie:
+ *             schema:
  *               type: string
+ *               description: JWT token set as a cookie.
  *       '400':
  *         description: Bad request. Invalid email or password provided.
  *       '401':
  *         description: Unauthorized. Email not found or password mismatch.
  *       '500':
  *         description: Internal server error.
+ * securityDefinitions:
+ *   cookieAuth:
+ *     type: apiKey
+ *     in: cookie
+ *     name: token
  */
 // User logout endpoint
 exports.usersRouter.post('/users/logout', async (req, res) => {
@@ -378,4 +394,4 @@ exports.usersRouter.delete('/users/delete/:userId', async (req, res) => {
  *         description: User not found.
  *       '500':
  *         description: Internal server error.
- */
+ */ 

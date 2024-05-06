@@ -31,9 +31,33 @@ const commentSchema = new mongoose_1.Schema({
     },
     author: {
         type: String,
-        ref: 'User',
-        required: true
-    }
+        required: true,
+    },
+    replies: [{
+            content: {
+                type: String,
+                required: true,
+            },
+            author: {
+                type: String,
+                required: true,
+            },
+        }],
+    createdAt: {
+        type: Date,
+        default: Date.now,
+    },
 });
+commentSchema.statics.createComment = async function (content, author) {
+    return this.create({ content, author });
+};
+commentSchema.statics.addReply = async function (commentId, replyContent, loggedInUsername) {
+    const comment = await this.findById(commentId).exec();
+    if (!comment) {
+        return null;
+    }
+    comment.replies.push({ content: replyContent, author: loggedInUsername });
+    return comment.save();
+};
 const Comment = mongoose_1.default.model('Comment', commentSchema);
 exports.default = Comment;

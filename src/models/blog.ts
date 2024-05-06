@@ -1,12 +1,14 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema, Document } from 'mongoose';
+import { CommentDocument } from './comment';
+import { LikeDocument } from './like';
 
 export interface BlogDocument extends Document {
     title: string;
     photo: string;
     content: string;
     author: string;
-    likes: number;
-    comments: string[];
+    likes: string[]; // Change the type to string array
+    comments: CommentDocument[]; // Change the type to CommentDocument array
 }
 
 const blogSchema: Schema<BlogDocument> = new Schema({
@@ -29,16 +31,14 @@ const blogSchema: Schema<BlogDocument> = new Schema({
         type: String,
         default: "HOZIYANA Erasme"
     },
-    likes: {
-        type: Number,
-        default: 0
-    },
-    comments: [
-        {
-            type: Schema.Types.ObjectId,
-            ref: 'Comment'
-        }
-    ]
+    likes: [{ // Define likes as array of strings
+        type: Schema.Types.ObjectId,
+        ref: 'Like'
+    }],
+    comments: [{ // Define comments as array of CommentDocument
+        type: Schema.Types.ObjectId,
+        ref: 'Comment'
+    }]
 });
 
 const Blog = mongoose.model<BlogDocument>('Blog', blogSchema);

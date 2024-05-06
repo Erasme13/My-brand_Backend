@@ -1,4 +1,5 @@
-import User, { UserDocument } from '/models/user';
+import User, { UserDocument } from '../models/user';
+
 import bcrypt from 'bcrypt';
 
 async function loginUser(email: string, password: string): Promise<UserDocument | null> {

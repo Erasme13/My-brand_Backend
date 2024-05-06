@@ -1,6 +1,6 @@
 import { ErrorRequestHandler } from 'express';
 
-const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
+const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
     if (err instanceof Error) {
         console.error(err.stack);
 

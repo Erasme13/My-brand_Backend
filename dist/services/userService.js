@@ -7,12 +7,24 @@ exports.getUserByEmail = exports.createUser = void 0;
 const user_1 = __importDefault(require("../models/user"));
 // Function to create a new user
 async function createUser(username, email, password) {
-    const newUser = new user_1.default({ username, email, password });
-    return await newUser.save();
+    try {
+        const newUser = new user_1.default({ username, email, password });
+        return await newUser.save();
+    }
+    catch (error) {
+        console.error('Error creating user:', error);
+        throw new Error('Failed to create user');
+    }
 }
 exports.createUser = createUser;
 // Function to retrieve a user by email
 async function getUserByEmail(email) {
-    return await user_1.default.findOne({ email }).exec();
+    try {
+        return await user_1.default.findOne({ email }).exec();
+    }
+    catch (error) {
+        console.error('Error fetching user by email:', error);
+        throw new Error('Failed to fetch user by email');
+    }
 }
 exports.getUserByEmail = getUserByEmail;

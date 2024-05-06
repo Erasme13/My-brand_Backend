@@ -58,13 +58,8 @@ const blogRouter = express_1.default.Router();
 // Create a new blog
 blogRouter.post('/addblog', adminMiddleware_1.isAdmin, blogValidation_1.validateBlog, async (req, res) => {
     const { title, content, photo } = req.body;
-    try {
-        const newBlog = await blogService.createBlog(title, content, photo);
-        res.status(201).json({ message: 'Blog created successfully', data: newBlog });
-    }
-    catch (err) {
-        handleRouteError(err, res);
-    }
+    const newBlog = await blogService.createBlog(title, content, photo);
+    res.status(201).json({ message: 'Blog created successfully', data: newBlog });
 });
 /**
  * @swagger
@@ -160,16 +155,11 @@ blogRouter.get('/blog/:id', async (req, res) => {
 blogRouter.put('/blog/update/:id', adminMiddleware_1.isAdmin, blogValidation_1.validateBlog, async (req, res) => {
     const blogId = req.params.id;
     const update = req.body;
-    try {
-        const updatedBlog = await blogService.updateBlog(mongoose_1.default.Types.ObjectId.createFromHexString(blogId), update);
-        if (!updatedBlog) {
-            return res.status(404).json({ message: 'Blog not found' });
-        }
-        res.status(200).json({ message: 'Blog updated successfully', data: updatedBlog });
+    const updatedBlog = await blogService.updateBlog(mongoose_1.default.Types.ObjectId.createFromHexString(blogId), update);
+    if (!updatedBlog) {
+        return res.status(404).json({ message: 'Blog not found or you do not have permission to update this blog' });
     }
-    catch (err) {
-        handleRouteError(err, res);
-    }
+    res.status(200).json({ message: 'Blog updated successfully', data: updatedBlog });
 });
 /**
  * @swagger
@@ -206,16 +196,11 @@ blogRouter.put('/blog/update/:id', adminMiddleware_1.isAdmin, blogValidation_1.v
 // Delete a blog
 blogRouter.delete('/blog/delete/:id', adminMiddleware_1.isAdmin, async (req, res) => {
     const blogId = req.params.id;
-    try {
-        const deletedBlog = await blogService.deleteBlog(mongoose_1.default.Types.ObjectId.createFromHexString(blogId));
-        if (!deletedBlog) {
-            return res.status(404).json({ message: 'Blog not found' });
-        }
-        res.status(200).json({ message: 'Blog deleted successfully', data: deletedBlog });
+    const deletedBlog = await blogService.deleteBlog(mongoose_1.default.Types.ObjectId.createFromHexString(blogId));
+    if (!deletedBlog) {
+        return res.status(404).json({ message: 'Blog not found or you do not have permission to delete this blog' });
     }
-    catch (err) {
-        handleRouteError(err, res);
-    }
+    res.status(200).json({ message: 'Blog deleted successfully', data: deletedBlog });
 });
 /**
  * @swagger

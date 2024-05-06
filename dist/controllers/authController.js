@@ -16,21 +16,29 @@ if (!jwtSecret) {
 const signup = async (req, res) => {
     try {
         const { username, email, password } = req.body;
+        // Validate input data
+        if (!username || !email || !password) {
+            return res.status(400).json({ message: 'Username, email, and password are required' });
+        }
+        // Check if user already exists
         const existingUser = await user_1.default.findOne({ email });
         if (existingUser) {
             return res.status(400).json({ message: 'User already exists with this email' });
         }
+        // Check if username is taken
         const existingUsername = await user_1.default.findOne({ username });
         if (existingUsername) {
             return res.status(400).json({ message: 'Username is already taken' });
         }
         const hashedPassword = await bcrypt_1.default.hash(password, 10);
+        // Create new user
         const newUser = await user_1.default.create({
             username,
             email,
             password: hashedPassword,
         });
-        const token = jsonwebtoken_1.default.sign({ userId: newUser._id }, jwtSecret);
+        // Generate JWT token
+        const token = jsonwebtoken_1.default.sign({ userId: newUser._id, isAdmin: newUser.role === 'admin' }, jwtSecret);
         res.status(201).json({ message: 'User created successfully', token });
     }
     catch (error) {
@@ -43,15 +51,22 @@ exports.signup = signup;
 const login = async (req, res) => {
     try {
         const { email, password } = req.body;
+        // Validate input data
+        if (!email || !password) {
+            return res.status(400).json({ message: 'Email and password are required' });
+        }
+        // Find user by email
         const user = await user_1.default.findOne({ email });
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
+        // Compare passwords
         const passwordMatch = await bcrypt_1.default.compare(password, user.password);
         if (!passwordMatch) {
             return res.status(401).json({ message: 'Invalid credentials' });
         }
-        const token = jsonwebtoken_1.default.sign({ userId: user._id }, jwtSecret);
+        // Generate JWT token with user's role
+        const token = jsonwebtoken_1.default.sign({ userId: user._id, isAdmin: user.role === 'admin' }, jwtSecret);
         res.status(200).json({ message: 'Login successful', token });
     }
     catch (error) {

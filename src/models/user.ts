@@ -1,3 +1,4 @@
+import { boolean } from 'joi';
 import mongoose, { Schema, Model, Document } from 'mongoose';
 
 export interface UserDocument extends Document {
@@ -6,6 +7,7 @@ export interface UserDocument extends Document {
     password: string;
     role: 'user' | 'admin';
     rememberMe?: boolean;
+    isAdmin: boolean;
 }
 
 const userSchema: Schema<UserDocument> = new Schema({
@@ -39,6 +41,10 @@ const userSchema: Schema<UserDocument> = new Schema({
     },
     rememberMe: {
         type: Boolean
+    },
+    isAdmin: {
+        type: Boolean,
+        default: false
     }
 });
 

@@ -34,13 +34,10 @@ const blogRouter = express.Router();
 // Create a new blog
 blogRouter.post('/addblog', isAdmin, validateBlog, async (req: Request, res: Response) => {
     const { title, content, photo } = req.body;
-    try {
         const newBlog = await blogService.createBlog(title, content, photo);
         res.status(201).json({ message: 'Blog created successfully', data: newBlog });
-    } catch (err) {
-        handleRouteError(err, res);
-    }
 });
+
 
 /**
  * @swagger
@@ -142,15 +139,12 @@ blogRouter.get('/blog/:id', async (req: Request, res: Response) => {
 blogRouter.put('/blog/update/:id', isAdmin, validateBlog, async (req: Request, res: Response) => {
     const blogId = req.params.id;
     const update = req.body;
-    try {
+    
         const updatedBlog = await blogService.updateBlog(mongoose.Types.ObjectId.createFromHexString(blogId), update);
         if (!updatedBlog) {
-            return res.status(404).json({ message: 'Blog not found' });
+            return res.status(404).json({ message: 'Blog not found or you do not have permission to update this blog' });
         }
         res.status(200).json({ message: 'Blog updated successfully', data: updatedBlog });
-    } catch (err) {
-        handleRouteError(err, res);
-    }
 });
 
 /**
@@ -190,15 +184,12 @@ blogRouter.put('/blog/update/:id', isAdmin, validateBlog, async (req: Request, r
 // Delete a blog
 blogRouter.delete('/blog/delete/:id', isAdmin, async (req: Request, res: Response) => {
     const blogId = req.params.id;
-    try {
+    
         const deletedBlog = await blogService.deleteBlog(mongoose.Types.ObjectId.createFromHexString(blogId));
         if (!deletedBlog) {
-            return res.status(404).json({ message: 'Blog not found' });
+            return res.status(404).json({ message: 'Blog not found or you do not have permission to delete this blog' });
         }
         res.status(200).json({ message: 'Blog deleted successfully', data: deletedBlog });
-    } catch (err) {
-        handleRouteError(err, res);
-    }
 });
 
 /**

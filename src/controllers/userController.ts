@@ -63,8 +63,10 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
-        // Generate JWT token  
-        const token = jwt.sign({ userID: user._id }, process.env.JWT_SECRET || '', { expiresIn: '1h' });
+      
+        // Generate JWT token
+       const token = jwt.sign({ userId: user._id, isAdmin: user.role === 'admin' }, process.env.JWT_SECRET || '', { expiresIn: '1d' });
+
         
         // Respond with the token 
         res.status(200).json({ token });
@@ -73,4 +75,3 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
         res.status(500).json({ message: 'Internal server error' });
     }
 };
-

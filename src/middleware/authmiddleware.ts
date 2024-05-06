@@ -1,37 +1,46 @@
 import { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
-import User, { UserDocument } from '../models/user';
+import User from '../models/user';
+import { Document, ObjectId } from 'mongoose';
+import { verifyToken } from '../middleware/auth';
 
 declare global {
     namespace Express {
         interface Request {
-            user?: UserDocument;
+            userId?: string;
         }
     }
 }
 
-export async function authenticateToken(req: Request, res: Response, next: NextFunction): Promise<void> {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
-    if (!token) {
-        res.sendStatus(401);
-        return;
-    }
+export interface IUser {
+    email: string;
+    username: string;
+    role: string;
+}
 
-    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as string, async (err, user) => {
-        if (err) {
-            res.sendStatus(403);
-            return;
-        }
-        req.user = user as UserDocument;
+// Define the interface for User Document
+export interface UserDocument extends Document, IUser {
+    _id: ObjectId;
+}
+
+// Middleware to extract user ID from JWT token
+export async function extractUserId(req: Request, res: Response, next: NextFunction): Promise<void> {
+    verifyToken(req, res, () => {
         next();
     });
 }
 
+// Function to get user by email
 export async function getUserByEmail(email: string): Promise<UserDocument | null> {
-    return await User.findOne({ email }).exec();
+    try {
+        const user = await User.findOne({ email }).exec();
+        return user as UserDocument;
+    } catch (error) {
+        console.error('Error fetching user by email:', error);
+        return null;
+    }
 }
 
+// Function to get user details for client
 export async function getUserForClient(email: string): Promise<{ username: string; isAdmin: boolean } | null> {
     const user = await getUserByEmail(email);
     if (user) {

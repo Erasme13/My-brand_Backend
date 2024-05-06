@@ -83,8 +83,8 @@ const loginUser = async (req, res) => {
             res.status(401).json({ message: 'Invalid email or password' });
             return;
         }
-        // Generate JWT token  
-        const token = jsonwebtoken_1.default.sign({ userID: user._id }, process.env.JWT_SECRET || '', { expiresIn: '1h' });
+        // Generate JWT token
+        const token = jsonwebtoken_1.default.sign({ userId: user._id, isAdmin: user.role === 'admin' }, process.env.JWT_SECRET || '', { expiresIn: '1d' });
         // Respond with the token 
         res.status(200).json({ token });
     }

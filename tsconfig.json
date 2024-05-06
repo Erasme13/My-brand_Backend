@@ -4,12 +4,13 @@
     "module": "commonjs",
     "outDir": "dist",
     "strict": true,
+    "resolveJsonModule": true,
     "esModuleInterop": true,
     "baseUrl": "./",
     "paths": {
       "*": ["src/*"]
     }
   },
-  "include": ["src/**/*.ts", "src/test/**/*.js", "src/test/user.test.js"],
+  "include": ["src/**/*.ts", "src/test/**/*.js", "src/test/user.test.js", "src/routes/passport.js"],
   "exclude": ["node_modules"]
 }

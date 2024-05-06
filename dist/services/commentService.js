@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getCommentsForBlog = exports.deleteComment = exports.updateComment = exports.getCommentById = exports.getAllComments = exports.createComment = void 0;
+exports.deleteComment = exports.updateComment = exports.getCommentById = exports.getAllComments = exports.getCommentsForBlog = exports.createComment = void 0;
 const joi_1 = __importDefault(require("joi"));
 const comment_1 = __importDefault(require("../models/comment"));
 // Joi schema for validating comment data
@@ -31,6 +31,17 @@ async function createComment(content, author) {
     }
 }
 exports.createComment = createComment;
+// Fetch comments for a specific blog
+async function getCommentsForBlog(blogId) {
+    try {
+        const comments = await comment_1.default.find({ blog: blogId });
+        return comments;
+    }
+    catch (error) {
+        throw error;
+    }
+}
+exports.getCommentsForBlog = getCommentsForBlog;
 // Get all comments
 async function getAllComments() {
     try {
@@ -75,7 +86,3 @@ async function deleteComment(commentId) {
     }
 }
 exports.deleteComment = deleteComment;
-function getCommentsForBlog(blogId) {
-    throw new Error('Function not implemented.');
-}
-exports.getCommentsForBlog = getCommentsForBlog;

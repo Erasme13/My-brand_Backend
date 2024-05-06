@@ -10,7 +10,7 @@ const blogSchema = Joi.object({
 });
 
 // Validation middleware function to validate incoming blog data
-export const validateBlog = (req: Request, res:Response, next: NextFunction) => {
+export const validateBlog = (req: Request, res: Response, next: NextFunction) => {
     const { error } = blogSchema.validate(req.body);
     if (error) {
         // Return validation error response
