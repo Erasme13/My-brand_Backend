@@ -26,7 +26,7 @@ export const app = express();
 const port = process.env.PORT || 4000;
 
 app.use(cors({
-    origin: ['*', 'https://my-brand-backend-5-pk68.onrender.com', 'http://127.0.0.1:5500', 'https://erasme13.github.io', 'https://hozerasme.netlify.app/'],
+    origin: ['https://my-brand-backend-5-pk68.onrender.com', 'http://127.0.0.1:5500', 'https://eracmsme13.github.io', 'https://hozerasme.netlify.app'],
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
